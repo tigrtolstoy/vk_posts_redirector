@@ -16,6 +16,10 @@ class Post:
         self.__date = date
         self.__text = text
     
+    @property
+    def id(self):
+        return self.__id
+
     @property 
     def url(self):
         return self.__url
