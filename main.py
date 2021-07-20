@@ -21,7 +21,8 @@ posts_handler = PostsHandler()
 
 for group_id in groups_ids:
     posts_data = posts_getter.get_posts_data(group_id, count=10)
-    posts = posts_handler.process_posts_data(posts_data)
+    group_name = posts_getter.get_group_name(group_id)
+    posts = posts_handler.process_posts_data(posts_data, group_name)
     for post in posts:
         print(post)
         print()

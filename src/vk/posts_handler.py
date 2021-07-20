@@ -4,17 +4,17 @@ from src.vk import Post
 
 
 class PostsHandler:
-    def process_posts_data(self, posts_data):
+    def process_posts_data(self, posts_data, group_name):
         assert isinstance(posts_data, list), 'posts_data must be list'
 
         sorted_posts = self.__sort_posts_by_date(posts_data)
         posts = []
         for post_data in sorted_posts:
-            post = self.__process_post_data(post_data)
+            post = self.__process_post_data(post_data, group_name)
             posts.append(post)
         return posts
     
-    def __process_post_data(self, post_data):
+    def __process_post_data(self, post_data, group_name):
         post_id = self.__get_post_id(post_data)
         url = self.__get_post_url(post_data)
         date = self.__get_post_date(post_data)
@@ -22,7 +22,7 @@ class PostsHandler:
             text = self.__get_text_from_repost(post_data)
         else:
             text = self.__get_post_text(post_data)
-        return Post(post_id, url, date, text)
+        return Post(post_id, url, group_name, date, text)
 
     def __sort_posts_by_date(self, posts):
         sort_key = lambda post: self.__get_post_timestamp(post)

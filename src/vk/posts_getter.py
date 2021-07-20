@@ -2,24 +2,43 @@ import requests
 
 
 class PostsGetter:
-    __VK_API_METHOD = 'wall.get'
     __API_VERSION = 5.131
 
     def __init__(self, api_token):
         self.__api_token = api_token
 
     def get_posts_data(self, group_id, count=10, offset=0):
-        query = self.__create_query(group_id, count, offset)
+        method = 'wall.get'
+        query_params = self.__create_query_params_string(group_id, count, offset)
+        query = self.__create_query(method, query_params)
         response = requests.get(query)
-
+        response_data = self.__process_response(response)
+        posts_data = self.__get_posts_from_response_data(response_data)
+        return posts_data
+    
+    def get_group_name(self, group_id):
+        method = 'groups.getById'
+        query_params = f'group_id={group_id[1:]}'
+        query = self.__create_query(method, query_params)
+        response = requests.get(query)
+        response_data = self.__process_response(response)
+        try:
+            group_name = response_data['response'][0]['name']
+            return group_name
+        except KeyError as e:
+            raise Exception(
+                f'Bad response: \n{response_data}') from e
+    
+    @staticmethod
+    def __process_response(response):
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as e:
             raise Exception('Bad response status') from e
 
         response_data = response.json()
-        posts_data = self.__get_posts_from_response_data(response_data)
-        return posts_data
+        return response_data
+        
 
     @staticmethod
     def __get_posts_from_response_data(response_data):
@@ -30,12 +49,10 @@ class PostsGetter:
             raise Exception(
                 f'Bad response: \n{response_data}') from e
     
-    def __create_query(self, group_id, count, offset):
-        query_params = self.__create_query_params_string(group_id, count, offset)
-
+    def __create_query(self, method, query_params):
         base_query = \
             'https://api.vk.com/method/{}?{}&access_token={}&v={}'
-        query = base_query.format(self.__VK_API_METHOD,
+        query = base_query.format(method,
                                   query_params,
                                   self.__api_token,
                                   self.__API_VERSION)
