@@ -1,0 +1,1 @@
+from src.vk.posts_getter import PostsGetter
