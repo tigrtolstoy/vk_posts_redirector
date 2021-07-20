@@ -5,6 +5,8 @@ from src.vk import Post
 
 class PostsHandler:
     def process_posts_data(self, posts_data):
+        assert isinstance(posts_data, list), 'posts_data must be list'
+
         sorted_posts = self.__sort_posts_by_date(posts_data)
         posts = []
         for post_data in sorted_posts:
@@ -13,10 +15,11 @@ class PostsHandler:
         return posts
     
     def __process_post_data(self, post_data):
+        post_id = self.__get_post_id(post_data)
         url = self.__get_post_url(post_data)
         date = self.__get_post_date(post_data)
         text = self.__get_post_text(post_data)
-        return Post(url, date, text)
+        return Post(post_id, url, date, text)
 
     def __sort_posts_by_date(self, posts):
         sort_key = lambda post: self.__get_post_timestamp(post)
@@ -29,8 +32,8 @@ class PostsHandler:
         return f'https://m.vk.com/wall{owner_id}_{post_id}'
     
     def __get_post_id(self, post):
-        post_id = self.__get_post_itme(post, 'id')
-        return post_id
+        post_id = self.__get_post_item(post, 'id')
+        return int(post_id)
     
     def __get_post_owner_id(self, post):
         owner_id = self.__get_post_item(post, 'owner_id')
@@ -46,7 +49,7 @@ class PostsHandler:
         return post_date
     
     def __get_post_text(self, post):
-        text = self.__get_post_item(post, 'text')
+        text = post.get('text', '')  # Пост может не иметь текста
         return text
 
     @staticmethod
@@ -60,5 +63,6 @@ class PostsHandler:
             
     @staticmethod
     def __timestamp_to_date(timestamp):
+        assert isinstance(timestamp, int), 'post timestamp must be int'
         date = datetime.fromtimestamp(timestamp)
         return date
