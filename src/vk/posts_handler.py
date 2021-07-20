@@ -18,7 +18,10 @@ class PostsHandler:
         post_id = self.__get_post_id(post_data)
         url = self.__get_post_url(post_data)
         date = self.__get_post_date(post_data)
-        text = self.__get_post_text(post_data)
+        if self.__post_is_repost(post_data):
+            text = self.__get_text_from_repost(post_data)
+        else:
+            text = self.__get_post_text(post_data)
         return Post(post_id, url, date, text)
 
     def __sort_posts_by_date(self, posts):
@@ -31,17 +34,26 @@ class PostsHandler:
         owner_id = self.__get_post_owner_id(post)
         return f'https://m.vk.com/wall{owner_id}_{post_id}'
     
+    def __get_text_from_repost(self, post):
+        if not self.__post_is_repost(post):
+            return self.__get_text_from_repost(post)
+        else:
+            original_post = post['copy_history'][0]
+            return self.__get_post_text(original_post)
+    
+    @staticmethod
+    def __post_is_repost(post):
+        return 'copy_history' in post
+        
     def __get_post_id(self, post):
         post_id = self.__get_post_item(post, 'id')
         return int(post_id)
     
     def __get_post_owner_id(self, post):
-        owner_id = self.__get_post_item(post, 'owner_id')
-        return owner_id
+        return self.__get_post_item(post, 'owner_id')
     
     def __get_post_timestamp(self, post):
-        post_timestamp = self.__get_post_item(post, 'date')
-        return post_timestamp
+        return self.__get_post_item(post, 'date')
         
     def __get_post_date(self, post):
         post_timestamp = self.__get_post_timestamp(post)
@@ -49,8 +61,7 @@ class PostsHandler:
         return post_date
     
     def __get_post_text(self, post):
-        text = post.get('text', '')  # Пост может не иметь текста
-        return text
+        return post.get('text', '')  # Пост может не иметь текста
 
     @staticmethod
     def __get_post_item(post, item_name):
@@ -64,5 +75,4 @@ class PostsHandler:
     @staticmethod
     def __timestamp_to_date(timestamp):
         assert isinstance(timestamp, int), 'post timestamp must be int'
-        date = datetime.fromtimestamp(timestamp)
-        return date
+        return datetime.fromtimestamp(timestamp)
