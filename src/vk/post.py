@@ -32,7 +32,7 @@ class Post:
     def text(self):
         return self.__text
 
-    def __repr__(self):
+    def post_to_msg(self):
         id_str = f'id: {self.__id}'
         url_str = f'url: {self.__url}'
         public_str = f'public: {self.__public_name}'
@@ -45,6 +45,9 @@ class Post:
 
         return '\n'.join([id_str, url_str, public_str,
                           date_str, text_str])
+    
+    def __repr__(self):
+        return self.post_to_msg()
 
     @staticmethod
     def __date_to_string(date):
