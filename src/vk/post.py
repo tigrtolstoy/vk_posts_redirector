@@ -2,19 +2,24 @@ from datetime import datetime
 
 
 class Post:
-    def __init__(self, post_id, url, public_name, date, text):
+    '''
+      Класс реализует структуру данных для постов ВК
+    '''
+    def __init__(self, post_id, url, public_name, date, text, is_pinned):
         assert isinstance(post_id, int), 'post id must be int'
         assert post_id >= 0, 'post id must be greater the 0'
         assert isinstance(url, str), 'post url must be str'
         assert isinstance(public_name, str), 'public name must be str'
         assert isinstance(date, datetime), 'post date must be datetime'
         assert isinstance(text, str), 'post text must be str'
+        assert isinstance(is_pinned, bool), 'is_pinned satus must be str'
 
         self.__id = post_id
         self.__url = url
         self.__public_name = public_name
         self.__date = date
         self.__text = text
+        self.__is_pinned = is_pinned
     
     @property
     def id(self):
@@ -35,8 +40,14 @@ class Post:
     @property
     def text(self):
         return self.__text
+    
+    @property
+    def is_pinned(self):
+        return self.__is_pinned
 
-    def post_to_msg(self):
+    def to_msg(self):
+        # Конветирует информацию в строку
+        # Может использоваться для отправки сообщения
         id_str = f'id: {self.__id}'
         url_str = f'url: {self.__url}'
         public_str = f'public: {self.__public_name}'
@@ -51,7 +62,7 @@ class Post:
                           date_str, text_str])
     
     def __repr__(self):
-        return self.post_to_msg()
+        return self.to_msg()
 
     @staticmethod
     def __date_to_string(date):

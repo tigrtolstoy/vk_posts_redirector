@@ -2,12 +2,16 @@ import requests
 
 
 class PostsGetter:
+    '''
+      Класс для получения постов из группы ВК
+    '''
     __API_VERSION = 5.131
 
     def __init__(self, api_token):
         self.__api_token = api_token
 
     def get_posts_data(self, group_id, count=10, offset=0):
+        # Получаем count постов начиная с offset
         method = 'wall.get'
         query_params = self.__create_query_params_string(group_id, count, offset)
         query = self.__create_query(method, query_params)
@@ -17,6 +21,7 @@ class PostsGetter:
         return posts_data
     
     def get_group_name(self, group_id):
+        # Получаем имя группы по id
         method = 'groups.getById'
         query_params = f'group_id={group_id[1:]}'
         query = self.__create_query(method, query_params)

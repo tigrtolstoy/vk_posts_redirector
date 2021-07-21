@@ -4,6 +4,9 @@ from src.vk import Post
 
 
 class PostsHandler:
+    '''
+      Класс для постобработки данных о постах групп ВК
+    '''
     def process_posts_data(self, posts_data, group_name):
         assert isinstance(posts_data, list), 'posts_data must be list'
 
@@ -22,10 +25,11 @@ class PostsHandler:
             text = self.__get_text_from_repost(post_data)
         else:
             text = self.__get_post_text(post_data)
-        return Post(post_id, url, group_name, date, text)
+        is_pinned = self.__get_pinned_status(post_data)
+        return Post(post_id, url, group_name, date, text, is_pinned)
 
     def __sort_posts_by_date(self, posts):
-        sort_key = lambda post: self.__get_post_timestamp(post)
+        sort_key = lambda post: self.__get_post_timestamp(post) * -1
         sorted_posts = sorted(posts, key=sort_key)
         return sorted_posts
 
@@ -40,6 +44,11 @@ class PostsHandler:
         else:
             original_post = post['copy_history'][0]
             return self.__get_post_text(original_post)
+    
+    @staticmethod
+    def __get_pinned_status(post):
+        pinned_status = post.get('is_pinned', 0)
+        return bool(pinned_status)
     
     @staticmethod
     def __post_is_repost(post):

@@ -23,7 +23,8 @@ class DBConnector:
         return result
 
     def update_last_sended_post(self, group_id, post_id):
-        query = f'INSERT OR REPLACE INTO public_sended_post (public_id, last_sended_post_id) values ({group_id}, {post_id})'
+        query = \
+            f'INSERT OR REPLACE INTO public_sended_post (public_id, last_sended_post_id) values ({group_id}, {post_id})'
         cursor = self.__connection.cursor()
         cursor.execute(query)
         cursor.close()
