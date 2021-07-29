@@ -50,16 +50,16 @@ class Post:
         # Может использоваться для отправки сообщения
         id_str = f'id: {self.__id}'
         url_str = f'url: {self.__url}'
-        public_str = f'public: {self.__public_name}'
+        public_str = f'{self.__public_name}'
 
         text_sep = '='*50
         text_str = f'{text_sep}\n{self.__text}\n{text_sep}'
 
         str_date = self.__date_to_string(self.__date)
-        date_str = f'date: {str_date}'
 
-        return '\n'.join([id_str, url_str, public_str,
-                          date_str, text_str])
+        msg = f'{str_date}\n<a href="{url_str}">ссылка на пост</a>\n\n<b>{public_str}</b>\n\n\n{self.__text}'
+        
+        return msg
     
     def __repr__(self):
         return self.to_msg()

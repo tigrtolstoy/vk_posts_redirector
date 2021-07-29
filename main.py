@@ -80,3 +80,4 @@ if __name__ == '__main__':
                 send_collected_posts(collector, last_sended_post)
             except ConnectionError as e:
                 sleep(5) # waiting for internet
+        sleep(60*3)
