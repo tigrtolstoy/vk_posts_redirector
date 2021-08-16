@@ -8,6 +8,8 @@
 # website: http://jupyter.org/
 *.db
 
+*/group_to_collect_posts.json
+
 .ipynb_checkpoints
 */.ipynb_checkpoints/*
 
