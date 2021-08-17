@@ -1,12 +1,13 @@
 import os
 import re
 import json
+import atexit
+from functools import partial
 
 
 def clean_text(text):
     clear_text = re.sub(r'http\S+', '', text)
-    clear_text = re.sub(r'#\S+', '', clear_text)
-    clear_text = re.sub('[^A-Za-zА-Яа-я]+', ' ', clear_text)
+    clear_text = re.sub('[^A-Za-zА-Яа-я0-9]+', ' ', clear_text)
     clear_text = clear_text.lower()
     clear_text = clear_text.strip()
     return clear_text
@@ -33,13 +34,34 @@ def save_text(path_to_save, text):
         text_file.write(text)
 
 
+
 path_to_texts = os.path.join(os.getcwd(), 'texts', 'raw_texts')
 path_to_save = os.path.join(os.getcwd(), 'texts', 'dataset')
 
 raw_texts_files = os.listdir(path_to_texts)
 
 file_counter = 0 
+
+labels_fname = 'labels.json'
 labels = dict()
+
+
+def save_labels_dict(fname):
+    if not len(labels):
+        return
+    with open(fname, 'w') as labels_file:
+        json.dump(labels, labels_file)
+
+
+atexit.register(partial(save_labels_dict, fname=labels_fname))
+
+
+if os.path.exists(labels_fname):
+    with open(labels_fname, 'r') as labels_file:
+        labels = json.load(labels_file)
+    labeled_texts = list(labels.keys())
+    raw_texts_files = [file for file in raw_texts_files if file not in labeled_texts]
+
 
 files_num = len(raw_texts_files)
 
@@ -70,9 +92,8 @@ while file_counter <= files_num:
     fname_to_save = os.path.join(path_to_save, fname)
     save_text(fname_to_save, clear_text)
     clear()
-    print(f'файл {fname} помечен как {categories_dict[label]}')
+    print(f'Файл {fname} помечен как {categories_dict[label]}')
+    print(f'Всего файлов: {files_num}. Помечено файлов: {file_counter + 1}', end='\n'*3)
     file_counter += 1
 
-
-with open('labels.json', 'w') as labels_file:
-    json.dump(labels, labels_file)
+save_labels_dict(labels, labels_fname)
